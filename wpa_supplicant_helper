@@ -1,0 +1,37 @@
+#!/bin/sh
+# This script will help you you to setup wpa_supplicant
+
+#Checking for root since we need it to access /etc
+
+if [ "$EUID" -ne 0 ];
+   then printf "Please Run As Root For file modification permissions!\n"
+   exit
+fi
+
+#Checking for wpa_supplicant
+
+if [[ ! -f /usr/bin/wpa_supplicant ]];
+    then printf "Wpa_supplicant is not installed, make sure its in your /usr/bin!\n"
+     exit
+fi
+
+#Checking for dhcpcd, if not present alert user to set up their /etc/resolv.conf 
+
+if [[ ! -f /sbin/dhcpcd ]];
+    then printf "dhcpcd not found, Make sure that you set up your /etc/resolv.conf to resolve ip addresses!\n"
+fi
+
+#The Actual Meat and Potatos, USER INPUT
+
+printf "Enter your Network SSID: \n"
+read -r SSID
+printf "Enter your Network Password: (Don't worry, input is hidden!)\n"
+read -r -s  PASS
+
+#Appetisers, check for config file
+if [[ -f /etc/wpa_supplicant/wpa_supplicant.conf ]];
+    then printf "/etc/wpa_supplicant/wpa_supplicant.conf was found, will replace the first 5 lines!"
+    sed '1,5d' /etc/wpa_supplicant/wpa_supplicant.conf
+    echo"#This is taken by wpa_supplicant_helper, do not add settings here as they will get removed!" | tee /etc/wpa_supplicant/wpa_supplicant.conf
+    wpa_passphrase $SSID $PASS | tee /etc/wpa_supplicant/wpa_supplicant.conf
+    echo"#Writing commands after this line is safe!" | tee /etc/wpa_supplicant/wpa_supplicant.conf
