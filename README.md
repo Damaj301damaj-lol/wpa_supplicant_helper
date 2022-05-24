@@ -12,3 +12,5 @@ Pull Requests And Issue Reporting are appreciated
 
 
 NOTE: i am an amateur script programmer and my script is probably NOT the most light/best working script, this is a small hobby project!
+
+This Script is "protected" by the GNU GPL v3 license
